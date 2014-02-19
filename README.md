@@ -37,6 +37,12 @@ espionage.py is a script to retrieve and organize various data by using REST API
 This script runs without MongoDB.
 
 
+## streamwatcher.py
+
+streamwatcher.py is a script to watch filtered stream by using Streaming API.
+This script runs without MongoDB.
+
+
 ## mongologger.py
 
 mongologger.py is a script to collect tweets and analyze them by using Streaming API.
