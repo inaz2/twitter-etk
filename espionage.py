@@ -35,14 +35,16 @@ def timeline(args):
         lines.append(line)
     for t in favs:
         t.created_at += timedelta(hours=+9)
+        line = "[%s] \x1b[37m  %s: %s\x1b[0m" % (t.created_at, t.user.screen_name, t.text.replace('\n', ' ').replace('&lt;', '<').replace('&gt;', '>'))
+        try:
+            lines.remove(line)
+        except ValueError:
+            pass
         line = "[%s] \x1b[36m* %s: %s\x1b[0m" % (t.created_at, t.user.screen_name, t.text.replace('\n', ' ').replace('&lt;', '<').replace('&gt;', '>'))
         lines.append(line)
 
-    last_line = None
     for line in sorted(lines):
-        if line != last_line:
-            print line
-            last_line = line
+        print line
 
 
 def fans(args):
