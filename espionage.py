@@ -21,7 +21,7 @@ def timeline(args):
 
     api = get_api()
     tweets = api.user_timeline(screen_name=screen_name, count=200, include_rts=True)
-    replies = api.search(q='@'+screen_name+' -RT', result_type='recent', count=100, include_entities=False)
+    replies = api.search(q='to:'+screen_name, result_type='recent', count=100, include_entities=False)
     favs = api.favorites(screen_name=screen_name, count=200, include_entities=False)
 
     lines = []
@@ -54,7 +54,7 @@ def fans(args):
     screen_name = args[0]
 
     api = get_api()
-    tweets = api.search(q='@'+screen_name+' -RT', result_type='recent', count=100, include_entities=False)
+    tweets = api.search(q='to:'+screen_name, result_type='recent', count=100, include_entities=False)
     ctr = Counter(t.user.screen_name for t in tweets)
     sname2name = dict((t.user.screen_name, t.user.name) for t in tweets)
     sname2desc = dict((t.user.screen_name, t.user.description.replace('\n', ' ')) for t in tweets)
