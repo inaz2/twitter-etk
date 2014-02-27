@@ -1,8 +1,11 @@
 import sys
+import codecs
 import json
 import tweepy
 
 import config
+
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 
 def get_api_and_auth():

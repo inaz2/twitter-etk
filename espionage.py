@@ -1,9 +1,12 @@
 import sys
+import codecs
 import tweepy
 from datetime import timedelta
 from collections import Counter
 
 import config
+
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 
 def get_api():

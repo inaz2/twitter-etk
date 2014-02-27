@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import os
 import sys
+import codecs
+import os
 import re
 import urllib2
 import json
@@ -10,6 +11,8 @@ import tweepy
 from pymongo import MongoClient
 
 import config
+
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout)
 
 
 def get_auth():
