@@ -31,9 +31,11 @@ def track_list(args):
         sys.exit(1)
     owner_sname, _, slug = args[0].split('/')
 
-    # TODO: fetch all pages
     api, auth = get_api_and_auth()
-    members = api.list_members(owner_screen_name=owner_sname, slug=slug)
+    members = []
+    cursor = tweepy.cursor.Cursor(api.list_members, owner_screen_name=owner_sname, slug=slug)
+    for page in cursor.pages():
+        members.extend(page)
     print ' / '.join(m.name for m in members)
     ids = [m.id_str for m in members]
 
@@ -46,7 +48,7 @@ def track_hashtag(args):
     if len(args) < 1:
         print >>sys.stderr, "Usage: python %s hashtag HASHTAG" % sys.argv[0]
         sys.exit(1)
-    hashtag = args[0].decode('utf-8')
+    hashtag = args[0]
 
     api, auth = get_api_and_auth()
     l = StdOutListener()
