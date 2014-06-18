@@ -50,20 +50,38 @@ def timeline(args):
         print line
 
 
-def fans(args):
+def replied(args):
     if len(args) < 1:
-        print >>sys.stderr, "Usage: python %s fans SCREEN_NAME" % sys.argv[0]
+        print >>sys.stderr, "Usage: python %s replied SCREEN_NAME" % sys.argv[0]
         sys.exit(1)
     screen_name = args[0]
 
     api = get_api()
     tweets = api.search(q='to:'+screen_name, result_type='recent', count=100, include_entities=False)
-    ctr = Counter(t.user.screen_name for t in tweets)
-    sname2name = dict((t.user.screen_name, t.user.name) for t in tweets)
-    sname2desc = dict((t.user.screen_name, t.user.description.replace('\n', ' ')) for t in tweets)
+
+    users = [(t.user.screen_name, (t.user.name, t.user.description)) for t in tweets]
+    ctr = Counter(zip(*users)[0])
+    profile = dict(users)
 
     for sname, count in ctr.most_common():
-        print "%d\t%s\t%s\t\x1b[1;30m%s\x1b[0m" % (count, sname, sname2name[sname], sname2desc[sname])
+        print "%d\t%s\t%s\t\x1b[1;30m%s\x1b[0m" % (count, sname, profile[sname][0], profile[sname][1].replace('\n', ' '))
+
+
+def replying(args):
+    if len(args) < 1:
+        print >>sys.stderr, "Usage: python %s replying SCREEN_NAME" % sys.argv[0]
+        sys.exit(1)
+    screen_name = args[0]
+
+    api = get_api()
+    tweets = api.user_timeline(screen_name=screen_name, count=200, include_rts=True)
+
+    users = [(user['screen_name'], user['name']) for t in tweets for user in t.entities['user_mentions'] if 'user_mentions' in t.entities]
+    ctr = Counter(zip(*users)[0])
+    profile = dict(users)
+
+    for sname, count in ctr.most_common():
+        print "%d\t%s\t%s" % (count, sname, profile[sname])
 
 
 def sources(args):
@@ -147,14 +165,16 @@ Note: You can dump only recent 3200 tweets.""" % sys.argv[0]
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print >>sys.stderr, "Usage: python %s [timeline|fans|sources|diff_following|following_protected|dump_tweets] ..." % sys.argv[0]
+        print >>sys.stderr, "Usage: python %s [timeline|replied|replying|sources|diff_following|following_protected|dump_tweets] ..." % sys.argv[0]
         sys.exit(1)
     subcommand, args = sys.argv[1], sys.argv[2:]
 
     if subcommand == 'timeline':
         timeline(args)
-    elif subcommand == 'fans':
-        fans(args)
+    elif subcommand == 'replied':
+        replied(args)
+    elif subcommand == 'replying':
+        replying(args)
     elif subcommand == 'sources':
         sources(args)
     elif subcommand == 'diff_following':
@@ -164,5 +184,5 @@ if __name__ == '__main__':
     elif subcommand == 'dump_tweets':
         dump_tweets(args)
     else:
-        print >>sys.stderr, "Usage: python %s [timeline|fans|sources|diff_following|following_protected|dump_tweets] ..." % sys.argv[0]
+        print >>sys.stderr, "Usage: python %s [timeline|replied|replying|sources|diff_following|following_protected|dump_tweets] ..." % sys.argv[0]
         sys.exit(1)
